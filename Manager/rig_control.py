@@ -44,6 +44,7 @@ class FrontPanel:
         self.frequency.set(self.config['frequency'])
         self.tuning_step.set(self.config['tuning_step'])
         self.radio_modes = ["no radio defined"]
+        self.tx_power = ["no radio defined"]
         
         
     def __del__(self):
@@ -148,6 +149,7 @@ class FrontPanel:
             self.a = CatManager(agent.name)
             model = self.a.radio_model()
             self.radio_modes = self.a.modemConfig()
+            self.tx_power = eval(self.a.txPower())
             self.config['agent_path'] = os.path.dirname(agent.name)
             root.title(model + " - Radio module configuration manager")
             config = self.config_frame(root)
@@ -240,6 +242,8 @@ class FrontPanel:
     def config_frame(self, parent):
         radio_modes = self.radio_modes
         radioMode = StringVar()
+        TxPower =StringVar()
+        tx_power = self.tx_power
         frame = Frame(parent)
         mode = Label(frame, text="mode")
         mode.grid(row=0, column=0, sticky="W")       
@@ -247,7 +251,7 @@ class FrontPanel:
         mode.grid(row=0, column=1, sticky="W")
         powerLabel = Label(frame, text="TX Power")
         powerLabel.grid(row=1, column=0, sticky="W")
-        powerScale = Scale(frame, width = 15, length=500, from_ = 0, to = 100, orient = HORIZONTAL)
+        powerScale = OptionMenu(frame, TxPower, *tx_power)
         powerScale.grid(row=1,column=1, sticky="W")        
 
         return frame

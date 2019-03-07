@@ -63,7 +63,7 @@ void transmit_power(char* args)
 	switch (request(args))
     {
       case get_request:
-         printf("-30,10\n");
+         printf("['-30', '-20', '-15', '-10', '0', '5', '7','10']\n");
          break;
       
       
