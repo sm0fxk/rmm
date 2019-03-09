@@ -153,7 +153,7 @@ class FrontPanel:
             self.config['agent_path'] = os.path.dirname(agent.name)
             root.title(model + " - Radio module configuration manager")
             config = self.config_frame(root)
-            config.grid(row=1,column=0)
+            config.grid(row=1,column=0, sticky="W")
             
     def reg_inspect(self):
         self.reg_inspect_window = Toplevel()
@@ -284,8 +284,8 @@ def main(args):
     display     = front_panel.display_frame(root)
     display.grid(row=0,column=0)
 
-    config = front_panel.config_frame(root)
-    config.grid(row=1,column=0)
+#    config = front_panel.config_frame(root)
+#    config.grid(row=1,column=0, sticky="W")
     
     
 

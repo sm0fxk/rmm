@@ -26,7 +26,7 @@ static void  read_rssi(char*);
 static void  trcv_status(char*);
 static void  error(char*);
 
-
+void get_radio_model();
 
 cmd_entry cmd_table[] = {
 
@@ -50,7 +50,7 @@ enum request_type request(char *param)
                        
 void radio_model(char* args)
 {
-	fputs("CC110x\n", stdout);
+	get_radio_model();
 }
 
 void modem_config(char* args)
@@ -74,6 +74,11 @@ void transmit_power(char* args)
 }
 void trcv_register(char* args)
 {
+    char *saveptr;
+    char reg_addr[10];
+    char value[10];
+    int reply;
+
 	switch (request(args))
     {
       case get_request:
@@ -82,7 +87,20 @@ void trcv_register(char* args)
       
       
       default:
-         printf("1A\n");
+         if(strchr(args, ',') == NULL)
+         {
+			 reply = get_trcv_register(atoi(args));
+             printf("%02x\n", reply);
+         }
+         else
+         {
+             strcpy(reg_addr, strtok_r(args, ",", &saveptr));
+             strcpy(value, strtok_r(NULL, ",", &saveptr));
+             set_trcv_register(atoi(reg_addr), atoi(value));
+             printf("%d\n", reply);
+	     }
+
+//         fprintf(stderr, "%s", args);
          break;      
   }
 }
