@@ -7,3 +7,7 @@ cat_agent.o:cat_agent.c
 
 cc1101_stub.o: cc1101_stub.c
 	gcc -c cc1101_stub.c
+
+clean:
+	rm cat_agent cat_agent.o cc1101_stub.o
+	

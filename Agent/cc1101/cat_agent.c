@@ -27,6 +27,10 @@ static void  trcv_status(char*);
 static void  error(char*);
 
 void get_radio_model();
+void get_modem_config();
+int get_trcv_register(int);
+int set_trcv_register(int,int);
+void get_transmit_power();
 
 cmd_entry cmd_table[] = {
 
@@ -55,15 +59,14 @@ void radio_model(char* args)
 
 void modem_config(char* args)
 {
-	printf("['GFSK, Data Rate: 1.2kBaud, Dev: 5.2kHz, RX BW 58kHz',");
-	printf("'GFSK, Data Rate: 2.4kBaud, Dev: 5.2kHz, RX BW 58kHz']\n");
+	get_modem_config();
 }
 void transmit_power(char* args)
 {  
 	switch (request(args))
     {
       case get_request:
-         printf("['-30', '-20', '-15', '-10', '0', '5', '7','10']\n");
+         get_transmit_power();
          break;
       
       
