@@ -31,6 +31,7 @@ void get_modem_config();
 int get_trcv_register(int);
 int set_trcv_register(int,int);
 void get_transmit_power();
+void init();
 
 cmd_entry cmd_table[] = {
 
@@ -165,6 +166,8 @@ int main()
     setbuf(stdout, NULL); // make it unbuffered
         
     size_t size;
+
+    init();
     while(1)
     {
     get_line();
