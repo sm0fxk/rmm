@@ -53,9 +53,6 @@ class FrontPanel:
 
 	
     def step(self, x, y,  direction):
- 
-
-
         step = self.tuning_step.get()
         f = self.frequency.get()
 
@@ -63,11 +60,12 @@ class FrontPanel:
             f += step
             if f < 438000000:
                 self.frequency.set(f)
+
         if direction == 'down':
             f -= step
             if f > 432000000:
                 self.frequency.set(f)	
-		
+        self.a.setFrequency(f)
 		
 #    if x < matchFrame.winfo_width():
 #        # Match
@@ -184,6 +182,7 @@ class FrontPanel:
         regAddress= self.regAddress.get()
         print(regAddress)
         regValue = self.a.trcvRegisters(regAddress)
+        self.regValue.delete(0, END)
         self.regValue.insert(0, regValue)
         
 	

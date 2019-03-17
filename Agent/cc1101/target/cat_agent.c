@@ -21,7 +21,7 @@ static void  radio_model(char*);
 static void  modem_config(char*);
 static void  transmit_power(char*);
 static void  trcv_register(char*);
-static void  set_frequency(char*);
+static void  frequency(char*);
 static void  read_rssi(char*);
 static void  trcv_status(char*);
 static void  error(char*);
@@ -39,7 +39,7 @@ cmd_entry cmd_table[] = {
                          {"MD", modem_config},  
                          {"PC", transmit_power},      
                          {"RE", trcv_register},
-                         {"FA", set_frequency},
+                         {"FA", frequency},
                          {"SM", read_rssi},
                          {"IF", trcv_status},
                          {"",   error} };
@@ -108,9 +108,15 @@ void trcv_register(char* args)
          break;      
   }
 }
-void set_frequency(char* args)
+void frequency(char* args)
 {
-}
+	unsigned long int freq;
+	
+	freq =  atol(args);
+	set_frequency(freq);
+//	fprintf(stderr, "%ld\n", freq);
+	printf("OK\n");
+	}
 void read_rssi(char* args)
 {
 }

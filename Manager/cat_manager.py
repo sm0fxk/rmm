@@ -74,12 +74,9 @@ class CatManager:
     def txPower(self, power = []):
         return(self.cat_transaction("PC", power))
         
-    def setFrequency( centre):
-        pass
-        
-        
-
-        
+    def setFrequency(self,frequency_Hz):
+        return(self.cat_transaction("FA", [frequency_Hz]))
+              
     def modemConfig(self, index= None):
         if index == None:    # get
             config = eval(self.cat_transaction("MD"))

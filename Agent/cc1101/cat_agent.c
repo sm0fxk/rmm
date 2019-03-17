@@ -109,6 +109,12 @@ void trcv_register(char* args)
 }
 void set_frequency(char* args)
 {
+	unsigned long int freq;
+	
+	freq =  atol(args);
+	fprintf(stderr, "%ld\n", freq);
+	printf("OK\n");
+	
 }
 void read_rssi(char* args)
 {

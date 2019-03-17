@@ -149,10 +149,19 @@ uint8_t get_trcv_register(uint8_t reg)
 
 }
 
-int set_trcv_register(int reg, int value)
+int set_trcv_register(uint8_t reg, uint8_t value)
 {
+    PI_CC_SPIWriteReg(&spi_parameters, reg, value);
+    return(0);
 
-	     return(0);
+}
 
+
+int set_frequency(unsigned long int freq)
+{
+    PI_CC_SPIWriteReg(&spi_parameters, PI_CCxxx0_FREQ2,    ((freq >>16) & 0xFF)); // Freq control word, high byte
+    PI_CC_SPIWriteReg(&spi_parameters, PI_CCxxx0_FREQ1,    ((freq>>8)  & 0xFF)); // Freq control word, mid byte.
+    PI_CC_SPIWriteReg(&spi_parameters, PI_CCxxx0_FREQ0,    (freq & 0xFF));       // Freq control word, low byte.
+    return(0);
 }
 
