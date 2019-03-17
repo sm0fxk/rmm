@@ -32,6 +32,7 @@ int get_trcv_register(int);
 int set_trcv_register(int,int);
 void get_transmit_power();
 void init();
+int set_frequency(unsigned long int);
 
 cmd_entry cmd_table[] = {
 
