@@ -4,12 +4,14 @@
 
 #include "main.h"
 #include "radio.h"
+#include "cc1101.h"
 
 arguments_t   arguments;
 //serial_t      serial_parameters;
 spi_parms_t   spi_parameters;
 radio_parms_t radio_parameters;
 
+static uint32_t get_freq_word(uint32_t freq_xtal, uint32_t freq_hz);
 
 char *modulation_names[] = {
     "OOK",
@@ -157,11 +159,12 @@ int set_trcv_register(uint8_t reg, uint8_t value)
 }
 
 
-int set_frequency(unsigned long int freq)
+int set_frequency(uint32_t freq_hz)
 {
-    PI_CC_SPIWriteReg(&spi_parameters, PI_CCxxx0_FREQ2,    ((freq >>16) & 0xFF)); // Freq control word, high byte
-    PI_CC_SPIWriteReg(&spi_parameters, PI_CCxxx0_FREQ1,    ((freq>>8)  & 0xFF)); // Freq control word, mid byte.
-    PI_CC_SPIWriteReg(&spi_parameters, PI_CCxxx0_FREQ0,    (freq & 0xFF));       // Freq control word, low byte.
+	uint32_t freq_word = get_freq_word(F_XTAL, freq_hz);
+    PI_CC_SPIWriteReg(&spi_parameters, PI_CCxxx0_FREQ2,    ((freq_word >>16) & 0xFF)); // Freq control word, high byte
+    PI_CC_SPIWriteReg(&spi_parameters, PI_CCxxx0_FREQ1,    ((freq_word>>8)  & 0xFF)); // Freq control word, mid byte.
+    PI_CC_SPIWriteReg(&spi_parameters, PI_CCxxx0_FREQ0,    (freq_word & 0xFF));       // Freq control word, low byte.
     return(0);
 }
 

@@ -83,6 +83,7 @@ void trcv_register(char* args)
     char reg_addr[10];
     char value[10];
     int reply;
+    char        *end;  
 
 	switch (request(args))
     {
@@ -94,14 +95,14 @@ void trcv_register(char* args)
       default:
          if(strchr(args, ',') == NULL)
          {
-			 reply = get_trcv_register(atoi(args));
+             reply = get_trcv_register(strtoul(args, &end, 16));
              printf("%02x\n", reply);
          }
          else
          {
              strcpy(reg_addr, strtok_r(args, ",", &saveptr));
              strcpy(value, strtok_r(NULL, ",", &saveptr));
-             set_trcv_register(atoi(reg_addr), atoi(value));
+             set_trcv_register(strtoul(reg_addr, &end, 16), strtoul(value, &end, 16));
              printf("%d\n", reply);
 	     }
 
@@ -112,8 +113,9 @@ void trcv_register(char* args)
 void frequency(char* args)
 {
 	unsigned long int freq;
+    char        *end;  
 	
-	freq =  atol(args);
+	freq =  strtoul(args, &end, 10);
 	set_frequency(freq);
 //	fprintf(stderr, "%ld\n", freq);
 	printf("OK\n");
