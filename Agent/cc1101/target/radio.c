@@ -85,7 +85,7 @@ uint32_t packets_received;
 // === Static functions declarations ==============================================================
 
 static float    rssi_dbm(uint8_t rssi_dec);
-static uint32_t get_freq_word(uint32_t freq_xtal, uint32_t freq_hz);
+//static uint32_t get_freq_word(uint32_t freq_xtal, uint32_t freq_hz);
 static uint8_t  get_mod_word(modulation_t modulation_code);
 static uint32_t get_if_word(uint32_t freq_xtal, uint32_t if_hz);
 static void     get_chanbw_words(float bw, radio_parms_t *radio_parms);

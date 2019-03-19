@@ -1,4 +1,4 @@
-OBJS = cat_agent.o  pi_cc_spi.o radio.o util.o cc1101_glue.o
+OBJS = cat_agent.o  cc1101_glue.o pi_cc_spi.o radio.o util.o 
 
 cat_agent: $(OBJS)
 	gcc $(LDFLAGS) -s -lm -lwiringPi -o cat_agent $(OBJS) 
