@@ -168,3 +168,14 @@ int set_frequency(uint32_t freq_hz)
     return(0);
 }
 
+int get_trcv_status()
+{
+    uint8_t fsm_state;
+
+	PI_CC_SPIReadStatus(&spi_parameters, PI_CCxxx0_MARCSTATE, &fsm_state);
+    fsm_state &= 0x1F;
+}
+
+void set_trcv_status(char *args)
+{}
+

@@ -23,6 +23,7 @@
 #  
 from tkinter import *
 from tkinter import filedialog
+
 import os
 import sys
 import json
@@ -151,7 +152,7 @@ class FrontPanel:
             self.config['agent_path'] = os.path.dirname(agent.name)
             root.title(model + " - Radio module configuration manager")
             config = self.config_frame(root)
-            config.grid(row=1,column=0, sticky="W")
+            config.grid(row=2,column=0, sticky="W")
             
     def reg_inspect(self):
         self.reg_inspect_window = Toplevel()
@@ -193,7 +194,39 @@ class FrontPanel:
             print("Enter value")
         else:
             self.a.trcvRegisters(regAddress, regValue)
-        		 
+            
+    def save_config(self):
+        reply = self.a.trcvRegisters()
+        (first_reg, last_reg) = eval(reply)
+        reg_addresses = range(first_reg, last_reg)
+        values = [int(self.a.trcvRegisters(reg_address),16) for reg_address in reg_addresses]
+        print(values)
+        fd = filedialog.asksaveasfile(mode='w', defaultextension=".json")
+ #       fd = open(reg_file, 'w')
+        json.dump(values, fd)
+        fd.close()
+
+      
+    def load_config(self):
+        fd = filedialog.askopenfile(initialdir = "/home/ulf",title='Select a file')
+        config = json.load(fd)
+        fd.close()
+        reply = self.a.trcvRegisters()
+        (first_reg, last_reg) = eval(reply)
+        reg_addresses = range(first_reg, last_reg)        
+        for reg_address in reg_addresses:
+            reply = self.a.trcvRegisters(reg_address, config[reg_address])
+            print(reply)
+
+    def top_frame(self, parent):
+        frame = Frame(parent)
+        Save_Config_Button = Button(frame, text="Save Config", command=self.save_config)
+        Save_Config_Button.grid( row = 0, column = 0)
+        
+        Load_Config_Button = Button(frame, text="Load Config", command=self.load_config)
+        Load_Config_Button.grid( row = 0, column = 1)
+        return frame
+        
     def display_frame(self,parent):
         frame = Frame(parent, background='skyblue')
         freq = Label(frame, textvariable=self.frequency, pady=5, background="skyblue")
@@ -280,8 +313,10 @@ def main(args):
     root        = Tk()
     front_panel = FrontPanel(root)
     front_panel.menu(root)
+    top = front_panel.top_frame(root)
+    top.grid(row=0,column=0)
     display     = front_panel.display_frame(root)
-    display.grid(row=0,column=0)
+    display.grid(row=1,column=0)
 
 #    config = front_panel.config_frame(root)
 #    config.grid(row=1,column=0, sticky="W")

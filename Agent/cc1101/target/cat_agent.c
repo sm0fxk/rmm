@@ -33,6 +33,8 @@ int set_trcv_register(int,int);
 void get_transmit_power();
 void init();
 int set_frequency(unsigned long int);
+int get_trcv_status();
+int set_trcv_status(char* );
 
 cmd_entry cmd_table[] = {
 
@@ -88,7 +90,7 @@ void trcv_register(char* args)
 	switch (request(args))
     {
       case get_request:
-         printf("01,62\n");
+         printf("(00,62)\n");
          break;
       
       
@@ -102,7 +104,7 @@ void trcv_register(char* args)
          {
              strcpy(reg_addr, strtok_r(args, ",", &saveptr));
              strcpy(value, strtok_r(NULL, ",", &saveptr));
-             set_trcv_register(strtoul(reg_addr, &end, 16), strtoul(value, &end, 16));
+             reply = set_trcv_register(strtoul(reg_addr, &end, 16), strtoul(value, &end, 16));
              printf("%d\n", reply);
 	     }
 
@@ -125,6 +127,17 @@ void read_rssi(char* args)
 }
 void trcv_status(char* args)
 {
+	switch (request(args))
+    {
+      case get_request:
+         get_trcv_status();
+         break;
+      
+      
+      case set_request:
+         set_trcv_status(args);
+         break;      
+  }
 }
 void error(char* args)
 {
