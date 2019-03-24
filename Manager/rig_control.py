@@ -199,16 +199,19 @@ class FrontPanel:
         reply = self.a.trcvRegisters()
         (first_reg, last_reg) = eval(reply)
         reg_addresses = range(first_reg, last_reg)
-        values = [int(self.a.trcvRegisters(reg_address),16) for reg_address in reg_addresses]
-        print(values)
+        registers = [int(self.a.trcvRegisters(reg_address),16) for reg_address in reg_addresses]
+        print(registers)
         fd = filedialog.asksaveasfile(mode='w', defaultextension=".json")
  #       fd = open(reg_file, 'w')
-        json.dump(values, fd)
+        model = self.a.radio_model()
+        content = {'model':model, 'configuration_name': 'bla', 'registers':registers}
+        json.dump(content, fd)
         fd.close()
 
       
     def load_config(self):
-        fd = filedialog.askopenfile(initialdir = "/home/ulf",title='Select a file')
+        fd = filedialog.askopenfile(initialdir = os.environ["HOME"]
+,title='Select a file', filetypes = [("Radio config files","*.json")])
         config = json.load(fd)
         fd.close()
         reply = self.a.trcvRegisters()

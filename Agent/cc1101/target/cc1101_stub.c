@@ -5,6 +5,7 @@
 #include "radio.h"
 #include "cc1101.h"
 
+uint8_t cc1101_register[64];
 
 void init()
 {
@@ -32,21 +33,31 @@ void get_transmit_power()
 
 }
 
-int get_trcv_register_range()
+void get_trcv_register_range()
 {
+	printf("(00,62)\n");
+
 }
 
 int get_trcv_register(int reg)
 {
-         return(0x2b);
+     return(cc1101_register[reg]);
 
 }
 
 int set_trcv_register(int reg, int value)
 {
+    cc1101_register[reg] =value;
+    return(0);
 
-	     return(0);
+}
 
+uint32_t get_frequency()
+{
+	uint8_t freq0 = 0;
+	uint8_t freq1 = 0;
+	uint8_t freq2 = 0;
+	
 }
 
 int set_frequency(uint32_t freq_hz)

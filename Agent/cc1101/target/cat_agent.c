@@ -35,6 +35,7 @@ void init();
 int set_frequency(unsigned long int);
 int get_trcv_status();
 int set_trcv_status(char* );
+void get_trcv_register_range();
 
 cmd_entry cmd_table[] = {
 
@@ -90,7 +91,7 @@ void trcv_register(char* args)
 	switch (request(args))
     {
       case get_request:
-         printf("(00,62)\n");
+         get_trcv_register_range();
          break;
       
       

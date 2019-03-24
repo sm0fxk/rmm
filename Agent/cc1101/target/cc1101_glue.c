@@ -133,9 +133,12 @@ void get_radio_model()
 
 void get_modem_config()
 {
-	printf("['GFSK, Data Rate: 1.2kBaud, Dev: 5.2kHz, RX BW 58kHz',");
-	printf("'GFSK, Data Rate: 2.4kBaud, Dev: 5.2kHz, RX BW 58kHz']\n");
-	}
+	printf("['OOK',");
+    printf("'2-FSK',");
+    printf("'4-FSK',");
+    printf("'MSK',");
+    printf("'GFSK']\n");
+}
 
 void get_transmit_power()
 {
@@ -143,6 +146,11 @@ void get_transmit_power()
 
 }
 
+int get_trcv_register_range()
+{
+	printf("(00,62)\n");
+
+}
 uint8_t get_trcv_register(uint8_t reg)
 {
     uint8_t reg_value;
@@ -158,6 +166,19 @@ int set_trcv_register(uint8_t reg, uint8_t value)
 
 }
 
+uint32_t get_frequency()
+{
+	uint8_t freq0 = 0;
+	uint8_t freq1 = 0;
+	uint8_t freq2 = 0;
+	PI_CC_SPIReadReg(&spi_parameters, PI_CCxxx0_FREQ2, &freq2); 
+	PI_CC_SPIReadReg(&spi_parameters, PI_CCxxx0_FREQ1, &freq1); 
+	PI_CC_SPIReadReg(&spi_parameters, PI_CCxxx0_FREQ0, &freq2); 
+
+	uint32_t freq_word = freq2 << 16 + freq1 << 8 + freq0;
+	uint32_t frequency = freq_word * F_XTAL / 0x10000;
+	return(frequency);
+}
 
 int set_frequency(uint32_t freq_hz)
 {
@@ -168,12 +189,13 @@ int set_frequency(uint32_t freq_hz)
     return(0);
 }
 
-int get_trcv_status()
+uint8_t get_trcv_status()
 {
     uint8_t fsm_state;
 
 	PI_CC_SPIReadStatus(&spi_parameters, PI_CCxxx0_MARCSTATE, &fsm_state);
     fsm_state &= 0x1F;
+    return(fsm_state);
 }
 
 void set_trcv_status(char *args)
