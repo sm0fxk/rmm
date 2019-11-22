@@ -66,7 +66,7 @@ class FrontPanel:
             f -= step
             if f > 432000000:
                 self.frequency.set(f)	
-        self.a.setFrequency(f)
+        self.a.frequency([f])
 		
 #    if x < matchFrame.winfo_width():
 #        # Match
