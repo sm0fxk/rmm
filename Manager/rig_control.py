@@ -106,12 +106,13 @@ class FrontPanel:
     
 
         file =Menu(top)
+        file.add_command(label='Load config', command = self.load_config , underline=0)
         file.add_command(label='Exit', command=self.shutdown, underline=0)
         top.add_cascade(label='File', menu=file, underline=0)
         
         module=Menu(top,tearoff=False)
-        module.add_command(label='Serial', command = self.module_cc110x, underline=0)
-        module.add_command(label='Local',command=self.module_rfm69, underline=0)
+        module.add_command(label='Network', command = self.conn_network, underline=0)
+        module.add_command(label='Local',command=self.conn_local, underline=0)
         top.add_cascade(label='Connect agent', menu=module, underline=0)
         
         debug = Menu(top,tearoff=False)
@@ -135,24 +136,23 @@ class FrontPanel:
         sys.exit()
     
     
-    def module_cc110x(self):
+    def conn_network(self):
         root.title("Radio module configuration utility, CC110x")
         pass
     
-    def module_rfm69(self):
-
-	
+    def conn_local(self):
         agent_default = self.config['agent_path']
         agent = filedialog.askopenfile(initialdir = agent_default,title='Select a file')
         if agent:
             self.a = CatManager(agent.name)
             model = self.a.radio_model()
+
             self.radio_modes = self.a.modemConfig()
             self.tx_power = eval(self.a.txPower())
             self.config['agent_path'] = os.path.dirname(agent.name)
             root.title(model + " - Radio module configuration manager")
-            config = self.config_frame(root)
-            config.grid(row=2,column=0, sticky="W")
+#            config = self.config_frame(root)
+#            config.grid(row=2,column=0, sticky="W")
             
     def reg_inspect(self):
         self.reg_inspect_window = Toplevel()
@@ -188,8 +188,8 @@ class FrontPanel:
         
 	
     def set_reg(self):
-        regAddress= self.regAddress.get()
-        regValue= self.regValue.get()
+        regAddress= int(self.regAddress.get(),16)
+        regValue= int(self.regValue.get(),16)
         if regValue == '':
             print("Enter value")
         else:
@@ -210,16 +210,30 @@ class FrontPanel:
 
       
     def load_config(self):
-        fd = filedialog.askopenfile(initialdir = os.environ["HOME"]
-,title='Select a file', filetypes = [("Radio config files","*.json")])
-        config = json.load(fd)
+        fd = filedialog.askopenfile(initialdir = os.environ["HOME"]  + "/repository/rmm"
+,title='Select a file', filetypes = [("Modem config files","*.py")])
+        print(fd)
+        config = eval(fd.read())
         fd.close()
+        model = config["model"]
+        self.description = config["description"]
+        registers = config["registers"]
         reply = self.a.trcvRegisters()
+        print(reply)
         (first_reg, last_reg) = eval(reply)
-        reg_addresses = range(first_reg, last_reg)        
-        for reg_address in reg_addresses:
-            reply = self.a.trcvRegisters(reg_address, config[reg_address])
+#        reg_addresses = range(first_reg, last_reg)
+        print(model)
+        print(self.description)
+
+        reg_address = 0        
+        for register in registers:
+            reply = self.a.trcvRegisters(reg_address, register)
+            reg_address +=1
             print(reply)
+        print(last_reg)
+        print(reg_address)
+        config = self.config_frame(root)
+        config.grid(row=2,column=0, sticky="W")
 
     def top_frame(self, parent):
         frame = Frame(parent)
@@ -275,6 +289,7 @@ class FrontPanel:
         return(frame)
     
     def config_frame(self, parent):
+        """
         radio_modes = self.radio_modes
         radioMode = StringVar()
         TxPower =StringVar()
@@ -288,7 +303,16 @@ class FrontPanel:
         powerLabel.grid(row=1, column=0, sticky="W")
         powerScale = OptionMenu(frame, TxPower, *tx_power)
         powerScale.grid(row=1,column=1, sticky="W")        
-
+        """
+        frame = Frame(parent)
+        mode_label = Label(frame, text="Modulation:")
+        mode_label.grid(row=0, column=0, sticky="W")
+        mode_value = Label(frame, text=self.description["modulation"])
+        mode_value.grid(row=0, column=1)
+        speed_label = Label(frame, text = "Speed:")
+        speed_label.grid(row = 1, column=0, sticky="W")
+        speed_value = Label(frame, text=self.description["speed"])
+        speed_value.grid(row=1, column=1)
         return frame
 
 

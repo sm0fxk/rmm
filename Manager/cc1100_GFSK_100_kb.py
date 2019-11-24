@@ -1,5 +1,5 @@
 {"model": "CC110x",
- "configuration_name": "GFSK 100kb/s",
+ "description": {"modulation":"GFSK", "speed": "100kb/s","rx_bw":"00"},
 "registers" : [ 
     0x07,  # IOCFG2        GDO2 Output Pin Configuration
     0x2E,  # IOCFG1        GDO1 Output Pin Configuration

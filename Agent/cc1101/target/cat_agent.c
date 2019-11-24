@@ -98,14 +98,14 @@ void trcv_register(char* args)
       default:
          if(strchr(args, ',') == NULL)
          {
-             reply = get_trcv_register(strtoul(args, &end, 16));
+             reply = get_trcv_register(strtoul(args, &end, 10));
              printf("%02x\n", reply);
          }
          else
          {
              strcpy(reg_addr, strtok_r(args, ",", &saveptr));
              strcpy(value, strtok_r(NULL, ",", &saveptr));
-             reply = set_trcv_register(strtoul(reg_addr, &end, 16), strtoul(value, &end, 16));
+             reply = set_trcv_register(strtoul(reg_addr, &end, 10), strtoul(value, &end, 10));
              printf("%d\n", reply);
 	     }
 

@@ -45,10 +45,10 @@ int get_trcv_register(int reg)
 
 }
 
-int set_trcv_register(int reg, int value)
+int set_trcv_register(unsigned int reg, unsigned int value)
 {
     cc1101_register[reg] =value;
-    return(0);
+    return(value);
 
 }
 

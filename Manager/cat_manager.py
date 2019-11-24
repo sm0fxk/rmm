@@ -35,7 +35,7 @@ class CatManager:
     def compose_cat_command(self, cmd, parameters):
         for parameter in parameters:
             cmd = cmd + str(parameter) + ','
-#       print cmd
+        print (cmd)
         return cmd.rstrip(',')
         
         
@@ -44,6 +44,7 @@ class CatManager:
         self.process.stdin.write(str.encode(cmd + '\n'))
         self.process.stdin.flush()
         reply = self.process.stdout.readline()
+        print(reply)
         reply_string = reply.decode('utf-8')
         return(reply_string.strip("\n"))
         
