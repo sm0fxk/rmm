@@ -30,6 +30,7 @@ import json
 #import hardware
 from cat_manager import CatManager
 from subprocess import Popen, PIPE
+import socket
 
 root = 0
 front_panel = 0
@@ -137,8 +138,24 @@ class FrontPanel:
     
     
     def conn_network(self):
-        root.title("Radio module configuration utility, CC110x")
-        pass
+        host = socket.gethostname()  # as both code is running on same pc
+        port = 5000  # socket server port number
+
+        client_socket = socket.socket()  # instantiate
+        client_socket.connect((host, port))  # connect to the server
+
+        message = input(" -> ")  # take input
+
+        while message.lower().strip() != 'bye':
+            client_socket.send(message.encode())  # send message
+            data = client_socket.recv(1024).decode()  # receive response
+
+            print('Received from server: ' + data)  # show in terminal
+
+            message = input(" -> ")  # again take input
+
+        client_socket.close()  # close the connection
+
     
     def conn_local(self):
         agent_default = self.config['agent_path']
