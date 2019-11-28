@@ -330,6 +330,8 @@ class FrontPanel:
         speed_label.grid(row = 1, column=0, sticky="W")
         speed_value = Label(frame, text=self.description["speed"])
         speed_value.grid(row=1, column=1)
+        deviation_label = Label(frame, text = "Deviation:")
+        deviation_label.grid(row=2,column=0, sticky="W")
         return frame
 
 
