@@ -1,5 +1,5 @@
-OBJS = cat_agent.o  cc1101_glue.o pi_cc_spi.o radio.o util.o 
-OBJS_STUB = cat_agent.o cc1101_stub.o
+OBJS = ../lib/cat_agent_net.o  cc1101_glue.o pi_cc_spi.o radio.o util.o 
+OBJS_STUB = ../lib/cat_agent_net.o cc1101_stub.o
 
 cat_agent: $(OBJS)
 	gcc $(LDFLAGS) -s -lm -lwiringPi -o cat_agent $(OBJS) 

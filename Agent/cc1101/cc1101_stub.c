@@ -12,34 +12,35 @@ void init()
 	
 }
 
-void get_radio_model()
+void get_radio_model(char* reply)
 {
-    fputs("CC110x\n", stdout);
+    sprintf(reply, "CC110x\n");
 
 }
 
-void get_modem_config()
+void get_modem_config(char* reply)
 {
-	printf("['OOK',");
+    sprintf(reply, "['OOK']\n");
     printf("'2-FSK',");
     printf("'4-FSK',");
     printf("'MSK',");
     printf("'GFSK']\n");
 	}
 
-void get_transmit_power()
+void get_transmit_power(char* reply)
 {
-    printf("['-30', '-20', '-15', '-10', '0', '5', '7','10']\n");
+    sprintf(reply, "['-30', '-20', '-15', '-10', '0', '5', '7','10']\n");
 
 }
 
-void get_trcv_register_range()
+void get_trcv_register_range(char* reply)
 {
-	printf("(00,62)\n");
+
+    sprintf(reply, "(00,62)\n");
 
 }
 
-int get_trcv_register(int reg)
+int get_trcv_register(int reg, char* reply)
 {
      return(cc1101_register[reg]);
 

@@ -30,7 +30,7 @@ import json
 #import hardware
 from cat_manager import CatManager
 from subprocess import Popen, PIPE
-import socket
+
 
 root = 0
 front_panel = 0
@@ -42,11 +42,12 @@ class FrontPanel:
         self.frequency = IntVar()
         self.tuning_step = IntVar()
         self.agent_path = self.config['agent_path']
-        self.module.set(self.config['module'])
+#        self.module.set(self.config['module'])
         self.frequency.set(self.config['frequency'])
         self.tuning_step.set(self.config['tuning_step'])
         self.radio_modes = ["no radio defined"]
         self.tx_power = ["no radio defined"]
+        self.tnc_model= StringVar()
         
         
     def __del__(self):
@@ -138,30 +139,19 @@ class FrontPanel:
     
     
     def conn_network(self):
-        host = socket.gethostname()  # as both code is running on same pc
-        port = 5000  # socket server port number
+        self.a = CatManager("network", ("127.0.0.1", 5000))
+        if self.a.tnc_connected():
+            model = self.a.radio_model()
+            print (model)
+            self.tnc_model.set(model)
+        else:
+            self.tnc_model.set("Connection Failed")
 
-        client_socket = socket.socket()  # instantiate
-        client_socket.connect((host, port))  # connect to the server
-
-        message = input(" -> ")  # take input
-
-        while message.lower().strip() != 'bye':
-            client_socket.send(message.encode())  # send message
-            data = client_socket.recv(1024).decode()  # receive response
-
-            print('Received from server: ' + data)  # show in terminal
-
-            message = input(" -> ")  # again take input
-
-        client_socket.close()  # close the connection
-
-    
     def conn_local(self):
         agent_default = self.config['agent_path']
         agent = filedialog.askopenfile(initialdir = agent_default,title='Select a file')
         if agent:
-            self.a = CatManager(agent.name)
+            self.a = CatManager("local", agent.name)
             model = self.a.radio_model()
 
             self.radio_modes = self.a.modemConfig()
@@ -236,7 +226,7 @@ class FrontPanel:
         self.description = config["description"]
         registers = config["registers"]
         reply = self.a.trcvRegisters()
-        print(reply)
+#        print(reply)
         (first_reg, last_reg) = eval(reply)
 #        reg_addresses = range(first_reg, last_reg)
         print(model)
@@ -246,7 +236,7 @@ class FrontPanel:
         for register in registers:
             reply = self.a.trcvRegisters(reg_address, register)
             reg_address +=1
-            print(reply)
+#            print(reply)
         print(last_reg)
         print(reg_address)
         config = self.config_frame(root)
@@ -254,11 +244,20 @@ class FrontPanel:
 
     def top_frame(self, parent):
         frame = Frame(parent)
-        Save_Config_Button = Button(frame, text="Save Config", command=self.save_config)
-        Save_Config_Button.grid( row = 0, column = 0)
+        Connect_Button = Button(frame, text="Connect TNC", command=self.conn_network)
+        Connect_Button.grid( row = 0, column = 0, sticky="E")
+
+        tnc_model_label = Label(frame, text="Connected to: ")
+        tnc_model_label.grid(row =0, column=1)
+
+        tnc_model = Label(frame, textvariable=self.tnc_model)
+        tnc_model.grid(row=0,column=2)
+
+ #       Save_Config_Button = Button(frame, text="Save Config", command=self.save_config)
+ #       Save_Config_Button.grid( row = 0, column = 0)
         
-        Load_Config_Button = Button(frame, text="Load Config", command=self.load_config)
-        Load_Config_Button.grid( row = 0, column = 1)
+ #       Load_Config_Button = Button(frame, text="Load Config", command=self.load_config)
+ #       Load_Config_Button.grid( row = 0, column = 1)
         return frame
         
     def display_frame(self,parent):
@@ -369,7 +368,7 @@ def main(args):
     
     
 
-    root.title("Radio Module Configuration manager - no radio module attached")
+    root.title("Radio Module Configuration manager")
 
 
 

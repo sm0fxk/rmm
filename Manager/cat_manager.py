@@ -22,15 +22,38 @@
 #  
 #  
 from subprocess import Popen, PIPE
+import socket
 #import hardware
 
 class CatManager:
-    def __init__(self, agent):
-        print(agent)		
-        self.process=Popen([agent],stdin=PIPE,stdout=PIPE)
+    def __init__(self, tnc_interface, agent):
+        self.tnc_interface = tnc_interface
+        if tnc_interface == "network":
+            ip, port = agent
+            #host = socket.gethostname()  # as both code is running on same pc
+            #port = 5000  # socket server port number
+
+            self.client_socket = socket.socket()  # instantiate
+            try:
+                self.client_socket.connect((ip, port))  # connect to the server
+                self.conn_status = True
+            except:
+                self.conn_status = False
+            
+
+        else:
+            print(agent)		
+            self.process=Popen([agent],stdin=PIPE,stdout=PIPE)
         
     def __del__(self):
-        self.process.kill()
+        if self.tnc_interface == 'network':
+            self.client_socket.close()  # close the connection
+        else:
+            self.process.kill()
+
+    def tnc_connected(self):
+        return self.conn_status
+
         
     def compose_cat_command(self, cmd, parameters):
         for parameter in parameters:
@@ -41,9 +64,17 @@ class CatManager:
         
     def cat_transaction(self, command, parameters = []):
         cmd = self.compose_cat_command(command, parameters)
-        self.process.stdin.write(str.encode(cmd + '\n'))
-        self.process.stdin.flush()
-        reply = self.process.stdout.readline()
+        if self.tnc_interface == 'network':
+            self.client_socket.send(cmd.encode())  # send message
+            data = self.client_socket.recv(1024).decode('utf-8')  # receive response
+#            print('Received from server: ' + data)  # show in terminal
+            return(data.strip("\n"))
+        else:
+#-------------------------------------------------
+            self.process.stdin.write(str.encode(cmd + '\n'))
+            self.process.stdin.flush()
+            reply = self.process.stdout.readline()
+#-------------------------------------------------
         print(reply)
         reply_string = reply.decode('utf-8')
         return(reply_string.strip("\n"))
@@ -88,34 +119,3 @@ class CatManager:
     def setSyncWords( syncWords,  length):
         pass
                
-"""       
-        
-    process.stdin.write("xxx")
-    process.stdout.read()
-# write 'a line\n' to the process
-p=Popen(["./cat_server"],stdin=PIPE,stdout=PIPE)
-
-
-
-
-p=Popen(["./cat_server"],stdin=PIPE,stdout=PIPE)
-
-
-p.stdout.flush()
-
-# get output from process "Something to print"
-one_line_output = p.stdout.readline()
-
-# write 'a line\n' to the process
-p.stdin.write(str.encode('QR\n'))
-p.stdin.flush()
-
-# get output from process "not time to break"
-one_line_output = p.stdout.readline() 
-
-# write "n\n" to that process for if r=='n':
-p.stdin.write(str.encode('QH\n'))
-
-# read the last output from the process  "Exiting"
-one_line_output = p.stdout.readline()
-"""
