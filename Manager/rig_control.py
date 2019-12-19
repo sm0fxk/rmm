@@ -139,7 +139,8 @@ class FrontPanel:
     
     
     def conn_network(self):
-        self.a = CatManager("network", ("127.0.0.1", 5000))
+ #       self.a = CatManager("network", ("127.0.0.1", 5000))
+        self.a = CatManager("network", ("manx", 5000))
         if self.a.tnc_connected():
             model = self.a.radio_model()
             print (model)
