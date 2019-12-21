@@ -11,6 +11,7 @@ void get_radio_model(char*);
 
 void init_spi();
 uint8_t readReg(uint8_t);
+void writeReg(uint8_t, uint8_t);
 
 
 void init()
@@ -43,7 +44,7 @@ uint8_t get_trcv_register(uint8_t reg, char* reply)
 
 int set_trcv_register(uint8_t reg, uint8_t value)
 {
-
+    writeReg(reg, value);
     return(value);
 
 }
