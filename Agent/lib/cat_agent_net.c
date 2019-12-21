@@ -35,14 +35,14 @@ static void  error(char*, char*);
 
 void get_radio_model(char* );
 void get_modem_config(char* );
-int get_trcv_register(int);
-int set_trcv_register(int,int);
-void get_transmit_power();
+int get_trcv_register(uint8_t, char*);
+int set_trcv_register(uint8_t,uint8_t);
+void get_transmit_power(char*);
 void init();
-int set_frequency(unsigned long int);
+int set_frequency(uint32_t);
 int get_trcv_status();
 int set_trcv_status(char* );
-void get_trcv_register_range();
+void get_trcv_register_range(char*);
 
 cmd_entry cmd_table[] = {
 
@@ -93,9 +93,10 @@ void trcv_register(char* args, char* replybuffer)
     char *saveptr;
     char reg_addr[10];
     char value[10];
-    int reply;
+    uint8_t reply;
     char        *end;  
 
+    printf("Trace: trcv_register\n");
     switch (request(args))
     {
       case get_request:
@@ -106,7 +107,7 @@ void trcv_register(char* args, char* replybuffer)
       default:
          if(strchr(args, ',') == NULL)
          {
-             reply = get_trcv_register(strtoul(args, &end, 10));
+             reply = get_trcv_register(strtoul(args, &end, 10),replybuffer);
              sprintf(replybuffer, "%02x\n", reply);
          }
          else
@@ -194,7 +195,8 @@ void parse_command(char* commandbuffer, char* replybuffer)
     
 int main()
 {
-   int sockfd, newsockfd, portno, clilen;
+   int sockfd, newsockfd, portno  ;
+   socklen_t clilen;
    char buffer[256];
    char reply_buffer[256];
    struct sockaddr_in serv_addr, cli_addr;
