@@ -37,14 +37,14 @@ front_panel = 0
 class FrontPanel:
     def __init__(self, root):
         self.root = root
-        self.config = self.get_config()
+#        self.config = self.get_config()
         self.module = StringVar()
         self.frequency = IntVar()
         self.tuning_step = IntVar()
-        self.agent_path = self.config['agent_path']
+        self.agent_path = self.get_config('agent_path')
 #        self.module.set(self.config['module'])
-        self.frequency.set(self.config['frequency'])
-        self.tuning_step.set(self.config['tuning_step'])
+        self.frequency.set(self.get_config('frequency'))
+        self.tuning_step.set(self.get_config('tuning_step'))
         self.radio_modes = ["no radio defined"]
         self.tx_power = ["no radio defined"]
         self.tnc_model= StringVar()
@@ -81,14 +81,18 @@ class FrontPanel:
         
             
 
+    def write_config(self, name, value):
+        config = get_config()
+        config[name] = value
 
-
-
+        with open('radio.json', 'w') as outfile:  
+            json.dump(config, outfile)
+        outfile.close()
 
 
 
     
-    def get_config(self):
+    def get_config(self, key):
         try:
             fd = open("radio.json")
             config = json.load(fd)
@@ -96,10 +100,11 @@ class FrontPanel:
         except:
             home = os.environ["HOME"]
             fd = open("radio.json", 'w')
-            config = {'module':'', 'frequency':433920000, 'tuning_step':1000, 'agent_path':home}
+            config = {'module':'', 'frequency':433920000, 'tuning_step':1000,
+                      'agent_path':home, 'ip_addr' : "localhost", 'tcp_port' : 5000}
             json.dump(config, fd)
             fd.close()
-        return(config)
+        return(config[key])
           
     
     def menu(self, parent):
@@ -123,12 +128,12 @@ class FrontPanel:
 
 
     def shutdown(self):
-        self.config['module'] = self.module.get()
-        self.config['frequency'] = self.frequency.get()
-        self.config['tuning_step'] = self.tuning_step.get()
+#        self.config['module'] = self.module.get()
+#        self.config['frequency'] = self.frequency.get()
+#        self.config['tuning_step'] = self.tuning_step.get()
     
-        with open('radio.json', 'w') as outfile:  
-            json.dump(self.config, outfile)
+#        with open('radio.json', 'w') as outfile:  
+#            json.dump(self.config, outfile)
             
         try:
             del(self.a)
@@ -136,20 +141,48 @@ class FrontPanel:
             pass
             
         sys.exit()
-    
-    
+
+    def connect_agent(self):
+
+        port = self.get_config('tcp_port')
+        connectWindow = Toplevel()
+        connectWindow.title("Connect agent")
+
+        ipLabel = Label(connectWindow, text='IP')
+        ipLabel.grid(row=0, column=0)
+        self.ipEntry = Entry(connectWindow)
+        self.ipEntry.grid(row=0, column=1)
+
+        portLabel = Label(connectWindow, text='Port')
+        portLabel.grid(row=1, column=0)
+        self.portEntry = Entry(connectWindow)
+        self.portEntry.grid(row=1, column=1)
+        self.portEntry.insert(0, port)
+        connectButton = Button(connectWindow, text = "Connect", command = self.conn_network)
+        connectButton.grid(row=2,column=0) 
+
+
+#        dismissButton = Button(connectWindow, text = "Dissmiss", command = connectWindow.destroy)
+#        dismissButton.grid(row=2,column=0)             
+
     def conn_network(self):
- #       self.a = CatManager("network", ("127.0.0.1", 5000))
-        self.a = CatManager("network", ("manx", 5000))
+        ip = self.ipEntry.get()
+        port = int(self.portEntry.get())
+        print(ip)
+        print(port)
+        self.a = CatManager("network", (ip, port))
+#        self.a = CatManager("network", ("manx", 5000))
         if self.a.tnc_connected():
             model = self.a.radio_model()
             print (model)
             self.tnc_model.set(model)
+            config = self.config_frame(root)
+            config.grid(row=2,column=0, sticky="W")
         else:
             self.tnc_model.set("Connection Failed")
 
     def conn_local(self):
-        agent_default = self.config['agent_path']
+        agent_default = self.get_config('agent_path')
         agent = filedialog.askopenfile(initialdir = agent_default,title='Select a file')
         if agent:
             self.a = CatManager("local", agent.name)
@@ -157,7 +190,7 @@ class FrontPanel:
 
             self.radio_modes = self.a.modemConfig()
             self.tx_power = eval(self.a.txPower())
-            self.config['agent_path'] = os.path.dirname(agent.name)
+            self.write_config('agent_path', os.path.dirname(agent.name))
             root.title(model + " - Radio module configuration manager")
 #            config = self.config_frame(root)
 #            config.grid(row=2,column=0, sticky="W")
@@ -188,7 +221,7 @@ class FrontPanel:
         pass
         
     def get_reg(self):
-        regAddress= self.regAddress.get()
+        regAddress= int(self.regAddress.get(), 16)
         print(regAddress)
         regValue = self.a.trcvRegisters(regAddress)
         self.regValue.delete(0, END)
@@ -245,7 +278,7 @@ class FrontPanel:
 
     def top_frame(self, parent):
         frame = Frame(parent)
-        Connect_Button = Button(frame, text="Connect TNC", command=self.conn_network)
+        Connect_Button = Button(frame, text="Connect TNC", command=self.connect_agent)
         Connect_Button.grid( row = 0, column = 0, sticky="E")
 
         tnc_model_label = Label(frame, text="Connected to: ")
@@ -306,11 +339,15 @@ class FrontPanel:
         return(frame)
     
     def config_frame(self, parent):
-        """
-        radio_modes = self.radio_modes
+        radio_modes = self.a.modemConfig()
+        tx_power = eval(self.a.txPower())
+        print(radio_modes)
+        print(tx_power)
+
+        #radio_modes = self.radio_modes
         radioMode = StringVar()
         TxPower =StringVar()
-        tx_power = self.tx_power
+        #tx_power = self.tx_power
         frame = Frame(parent)
         mode = Label(frame, text="mode")
         mode.grid(row=0, column=0, sticky="W")       
@@ -332,6 +369,7 @@ class FrontPanel:
         speed_value.grid(row=1, column=1)
         deviation_label = Label(frame, text = "Deviation:")
         deviation_label.grid(row=2,column=0, sticky="W")
+        """
         return frame
 
 
