@@ -20,12 +20,9 @@ void get_radio_model(char* reply)
 
 void get_modem_config(char* reply)
 {
-    sprintf(reply, "['OOK']\n");
-    printf("'2-FSK',");
-    printf("'4-FSK',");
-    printf("'MSK',");
-    printf("'GFSK']\n");
-	}
+    sprintf(reply, "['OOK','2-FSK','4-FSK','MSK','GFSK']\n");
+    
+}
 
 void get_transmit_power(char* reply)
 {

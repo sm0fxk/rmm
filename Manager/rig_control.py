@@ -337,26 +337,72 @@ class FrontPanel:
 
       
         return(frame)
-    
+
+
+    def apply(self):
+        datamodul = self.radioMode.get()
+        fq = self.frequency.get()
+        tx_pwr = self.TxPower.get()
+        rx_bw = self.RxBandwidth.get()
+        rate = self.bps.get()
+        fd  = self.fdev.get()
+        self.a.apply_config([datamodul, fq, tx_pwr, rx_bw, rate, fd])
+
+
     def config_frame(self, parent):
         radio_modes = self.a.modemConfig()
         tx_power = eval(self.a.txPower())
+        rx_bw = eval(self.a.rxBandwidth())
+        bpslist = eval(self.a.bitrate())
+        fdevlist = eval(self.a.deviation())
+
         print(radio_modes)
         print(tx_power)
+        print(rx_bw)
+        print(bpslist)
+        print(fdevlist)
 
-        #radio_modes = self.radio_modes
-        radioMode = StringVar()
-        TxPower =StringVar()
-        #tx_power = self.tx_power
+        self.radioMode = StringVar()
+        self.TxPower = StringVar()
+        self.RxBandwidth = StringVar()
+        self.fdev = StringVar()
+        self.bps = StringVar()
+
         frame = Frame(parent)
-        mode = Label(frame, text="mode")
+        mode = Label(frame, text="Modulation")
         mode.grid(row=0, column=0, sticky="W")       
-        mode = OptionMenu(frame, radioMode, *radio_modes)
+        mode = OptionMenu(frame, self.radioMode, *radio_modes)
         mode.grid(row=0, column=1, sticky="W")
         powerLabel = Label(frame, text="TX Power")
-        powerLabel.grid(row=1, column=0, sticky="W")
-        powerScale = OptionMenu(frame, TxPower, *tx_power)
-        powerScale.grid(row=1,column=1, sticky="W")        
+        powerLabel.grid(row=0, column=2, sticky="W")
+        powerScale = OptionMenu(frame, self.TxPower, *tx_power)
+        powerScale.grid(row=0,column=3, sticky="W")
+
+        bpsLabel = Label(frame, text = "Bitrate")
+        bpsLabel.grid(row = 1, column = 0, sticky="W")
+        bpsMenu= OptionMenu(frame, self.bps, *bpslist)
+        bpsMenu.grid(row=1, column=1,sticky="W")
+
+
+
+
+        fdevLabel=  Label(frame, text = "Deviation")
+        fdevLabel.grid(row = 1, column = 2, sticky="W")
+        fdevMenu = OptionMenu(frame, self.fdev, *fdevlist)
+        fdevMenu.grid(row = 1, column = 3, sticky="W")
+
+
+
+        bwLabel = Label(frame, text = "RX bandwidth")
+        bwLabel.grid(row = 1, column = 4, sticky="W")
+        bwMenu = OptionMenu(frame, self.RxBandwidth, *rx_bw)
+        bwMenu.grid(row = 1, column = 5, sticky="W")
+
+
+        applyButton = Button(frame, text ="Apply", command = self.apply)
+        applyButton.grid(row= 4, column=0)
+
+
         """
         frame = Frame(parent)
         mode_label = Label(frame, text="Modulation:")

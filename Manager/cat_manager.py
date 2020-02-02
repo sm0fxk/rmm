@@ -98,10 +98,7 @@ class CatManager:
 
         return(reply)
       
-   
-   
-   
-   
+ 
    
     def txPower(self, power = []):
         return(self.cat_transaction("PC", power))
@@ -119,3 +116,16 @@ class CatManager:
     def setSyncWords( syncWords,  length):
         pass
                
+    def rxBandwidth(self, bw = []):
+        return(self.cat_transaction("SH", bw))
+
+
+    def bitrate(self, rate = []):
+        return(self.cat_transaction("DR", rate))
+
+    def deviation(self, fdev = []):
+        return(self.cat_transaction("FD", fdev))
+
+    def apply_config(self, config = []):
+        return(self.cat_transaction("AP", config))
+
